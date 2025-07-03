@@ -120,6 +120,10 @@ header h1 {
     transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
+.controls button.stop {
+    background-color: var(--danger-color);
+}
+
 .controls button:hover {
     transform: scale(1.05);
 }

@@ -1,7 +1,7 @@
 'use strict';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- SELEÇÃO DOS ELEMENTOS DO DOM (INTERFACE) ---
+    //  SELEÇÃO DOS ELEMENTOS DO DOM (INTERFACE) 
     const altitudeValue = document.getElementById('altitude-value');
     const accelerationValue = document.getElementById('acceleration-value');
     const snrValue = document.getElementById('snr-value');
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
 
-    // --- INICIALIZAÇÃO DO WEBSOCKET ---
+    //  INICIALIZAÇÃO DO WEBSOCKET 
     var gateway = `ws://${window.location.hostname}/ws`;
     var websocket;
 
@@ -44,27 +44,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function onMessage(event) {
-    data_json = JSON.parse(event.data);
+        data_json = JSON.parse(event.data);
 
-    if (data_json.code == 100) {
-        // code 100 sinaliza que a messagem é callback de algum butão
-        switch (data_json.op) {
-            case "start":
-                callbackStart();
-                break;
-            case "stop":
-                callbackStop();
-                break;
-            case "reset":
-                callbackReset();
-                break;
-            case "calib":
-                callbackCalib();
-                break;
-            case "eject":
-                callbackEject();
-                break;
-            }
+        if (data_json.code == 100) {
+            // code 100 sinaliza que a messagem é callback de algum botão
+            switch (data_json.op) {
+                case "start":
+                    callbackStart();
+                    break;
+                case "stop":
+                    callbackStop();
+                    break;
+                case "reset":
+                    callbackReset();
+                    break;
+                case "calib":
+                    callbackCalib();
+                    break;
+                case "eject":
+                    callbackEject();
+                    break;
+                }
         } else if (data_json.code == 101) {
             //code 101 sinaliza que a messagem é de dados
             updateData(data_json);
@@ -72,14 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     initWebSocket();
-    // --- FIM INICIALIZAÇÃO DO WEBSOCKET ---
+    //  FIM INICIALIZAÇÃO DO WEBSOCKET 
 
-    function initButton() {
-        document.getElementById("stop").addEventListener("click", (event) => {
-            websocket.send("stop");
-        });
-    }
-    // ------- funções de callback dos botões-----------------
+  
+    // - funções de callback dos botões--
     function callbackEject() {}
     function callbackReset() {}
     function callbackCalib() {}
@@ -118,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     
-    // --- SELEÇÃO DOS ELEMENTOS DO DOM (MODAL) ---
+    //  SELEÇÃO DOS ELEMENTOS DO DOM (MODAL) 
     const modal = {
         overlay: document.getElementById('confirmation-modal'),
         title: document.getElementById('modal-title'),
@@ -130,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Variável para guardar a ação a ser confirmada
     let actionToConfirm = null;
 
-    // --- LÓGICA DO MODAL ---
+    //  LÓGICA DO MODAL 
 
     /**
      * Abre o modal com uma mensagem customizada e guarda a ação a ser executada.
@@ -178,43 +174,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    // --- FUNÇÕES DE AÇÃO PRINCIPAIS (AQUI VOCÊ COLOCA A LÓGICA REAL) ---
+    //  FUNÇÕES DE AÇÃO PRINCIPAIS (AQUI VOCÊ COLOCA A LÓGICA REAL) 
     // Estas são as funções que serão chamadas APÓS a confirmação.
 
+    var simulationInterval = null;
+
     function startSystem() {
-        console.log("✅ Ação confirmada: Iniciar Sistema");
-        
-        websocket.send("start");
+        console.log("✅ Ação confirmada: Iniciar coleta.");
+    
+        //websocket.send("start");
+        setTimeout(() => {
+            websocket.send("start");
+        }, 100);
 
-        // ... (código de simulação para testes continua o mesmo)
-        // --- FUNÇÃO PRINCIPAL DE ATUALIZAÇÃO DA INTERFACE ---
-        /**
-         * Atualiza a interface com os novos dados de telemetria.
-         * @param {object} data - O objeto de dados recebido via WebSocket.
-         * Exemplo de objeto: { altitude: 150.7, acceleration: 10.2, snr: -10, snr_a: -12, ejection: "Habilitada" }
-         */
-        function updateTelemetryUI(data) {
-            altitudeValue.textContent = data.altitude.toFixed(2);
-            accelerationValue.textContent = data.acceleration.toFixed(2);
-            snrValue.textContent = data.snr.toFixed(1);
-            snrAValue.textContent = data.snr_a.toFixed(1);
+        controlButtons.start.classList.add('stop');
+        controlButtons.start.innerText = "Parar";
 
-            // Atualiza o texto e a classe do status de ejeção
-            ejectionStatus.textContent = data.ejection;
-            ejectionStatus.className = ''; // Limpa classes antigas
-            switch (data.ejection) {
-                case 'Desabilitada':
-                    ejectionStatus.classList.add('status-desabilitada');
-                    break;
-                case 'Habilitada':
-                    ejectionStatus.classList.add('status-habilitada');
-                    break;
-                case 'Ejetada':
-                    ejectionStatus.classList.add('status-ejetada');
-                    break;
-            }
-        }
-        // --- SIMULADOR DE DADOS (REMOVA OU COMENTE ESTA SEÇÃO) ---
+        //  SIMULADOR DE DADOS (REMOVA OU COMENTE ESTA SEÇÃO) 
         // Este código serve apenas para demonstrar a atualização da interface.
         function simulateData() {
             const ejectionStates = ['Desabilitada', 'Habilitada', 'Ejetada'];
@@ -228,12 +204,24 @@ document.addEventListener('DOMContentLoaded', () => {
             updateTelemetryUI(simulatedData);
         }
         // Inicia a simulação, atualizando a cada 2 segundos.
-        setInterval(simulateData, 2000); 
+        simulationInterval = setInterval(simulateData, 2000); 
         // FIM DA SEÇÃO DO SIMULADOR
     }
 
+    function stopSystem() {
+        console.log("✅ Ação confirmada: Parar coleta.");
+        controlButtons.start.classList.remove('stop');
+        controlButtons.start.innerText = "Iniciar";
+
+        //websocket.send("stop");
+        setTimeout(() => {
+            websocket.send("stop");
+        }, 100);
+        clearInterval(simulationInterval);
+    }
+
     function calibrateSystem() {
-        console.log("✅ Ação confirmada: Calibrar Sensores");
+        console.log("✅ Ação confirmada: Calibrar Sensores.");
 
         websocket.send("calib");
         setTimeout(() => {
@@ -242,8 +230,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function resetSystem() {
-        console.log("✅ Ação confirmada: Resetar Aviônica");
-        
+        console.log("✅ Ação confirmada: Resetar Aviônica.");
+        resetTelemetryData();
         setTimeout(() => {
             websocket.send("reset");
         }, 100);
@@ -259,10 +247,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // --- CONECTANDO OS BOTÕES DA INTERFACE AO MODAL ---
+    //  CONECTANDO OS BOTÕES DA INTERFACE AO MODAL 
 
     controlButtons.start.addEventListener('click', () => {
-        openModal('Deseja realmente iniciar o sistema?', startSystem);
+        if(!controlButtons.start.classList.contains('stop')) {
+            openModal('Deseja realmente iniciar a coleta?', startSystem);
+        }else{
+            openModal('Deseja realmente parar a coleta?', stopSystem);
+        }
+        
     });
 
     controlButtons.calibrate.addEventListener('click', () => {
@@ -274,16 +267,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     controlButtons.eject.addEventListener('click', () => {
-        // Para a ejeção, usamos o parâmetro 'isDangerous' para deixar o botão "Sim" vermelho
         openModal('CRÍTICO: Confirmar EJEÇÃO do paraquedas?', ejectSystem, true);
     });
 
-
-    // -------------------------------------------------------------------
-    // --- FUNÇÕES DE ATUALIZAÇÃO DA INTERFACE E SIMULAÇÃO (COMO ANTES) ---
-    // -------------------------------------------------------------------
-
+    
+    //  FUNÇÃO PRINCIPAL DE ATUALIZAÇÃO DA INTERFACE 
+    /**
+     * Atualiza a interface com os novos dados de telemetria.
+     * @param {object} data - O objeto de dados recebido via WebSocket.
+     * Exemplo de objeto: { altitude: 150.7, acceleration: 10.2, snr: -10, snr_a: -12, ejection: "0" }
+     */
     function updateTelemetryUI(data) {
-        // ... (código para atualizar altitude, aceleração, etc. continua o mesmo)
+        altitudeValue.textContent = data.altitude.toFixed(2);
+        accelerationValue.textContent = data.acceleration.toFixed(2);
+        snrValue.textContent = data.snr.toFixed(1);
+        snrAValue.textContent = data.snr_a.toFixed(1);
+
+        // Atualiza o texto e a classe do status de ejeção
+        ejectionStatus.textContent = data.ejection;
+        ejectionStatus.className = ''; // Limpa classes antigas
+        switch (data.ejection) {
+            case 'Desabilitada':
+                ejectionStatus.classList.add('status-desabilitada');
+                break;
+            case 'Habilitada':
+                ejectionStatus.classList.add('status-habilitada');
+                break;
+            case 'Ejetada':
+                ejectionStatus.classList.add('status-ejetada');
+                break;
+        }
+    }
+
+    function resetTelemetryData() {
+        altitudeValue.textContent = '0.00';
+        accelerationValue.textContent = '0.00';
+        snrValue.textContent = '0.0';
+        snrAValue.textContent = '0.0';
+        ejectionStatus.textContent = 'Desabilitada';
+        ejectionStatus.className = '';
+        ejectionStatus.classList.add('status-desabilitada');
     }
 });
