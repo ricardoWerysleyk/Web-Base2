@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="favicon2.ico">
+    <title>Telemetria - Potiguar Rocket Design</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="logo_PRD.png" alt="Logo da Potiguar Rocket Design">
+            </div>
+            <h1>Potiguar Rocket Design</h1>
+        </header>
+
+        <main class="telemetry-grid">
+            <div class="data-card">
+                <h3>Altitude</h3>
+                <p><span id="altitude-value">0.00</span> m</p>
+            </div>
+
+            <div class="data-card">
+                <h3>Aceleração</h3>
+                <p><span id="acceleration-value">0.00</span> m/s²</p>
+            </div>
+
+            <div class="data-card">
+                <h3>Lora SNR</h3>
+                <p><span id="snr-value">0.0</span> db</p>
+            </div>
+
+            <div class="data-card">
+                <h3>Lora SNR (A)</h3>
+                <p><span id="snr-a-value">0.0</span> db</p>
+            </div>
+
+            <div class="data-card">
+                <h3>Tempo</h3>
+                <p><span id="milis">00:00:00</span></p>
+            </div>
+
+            <div class="data-card status-card">
+                <h3>Status da Ejeção</h3>
+                <p><span id="ejection-status" class="status-desabilitada">Desabilitada</span></p>
+            </div>
+        </main>
+
+        <div id="confirmation-modal" class="modal-overlay">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <h2 id="modal-title">Você tem certeza?</h2>
+                <p id="modal-description"></p>
+                <div class="modal-actions">
+                    <button id="modal-btn-no" class="btn-modal">Não</button>
+                    <button id="modal-btn-yes" class="btn-modal">Sim</button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="controls">
+            <button id="btn-start">Iniciar</button>
+            <button id="btn-calibrate">Calibrar</button>
+            <button id="btn-reset">Resetar</button>
+            <button id="btn-eject" class="danger">Ejetar</button>
+        </footer>
+    </div>
+
+</body>
+</html>
